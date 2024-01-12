@@ -1,15 +1,15 @@
-import os
-from ebooklib import epub
+import epub_conversion
+from epub_conversion.utils import open_book, convert_epub_to_lines
 from bs4 import BeautifulSoup
 
-def epub_to_txt(epub_path):
-    book = epub.read_epub(epub_path)
-    text = ""
 
-    for item in book.get_items():
-        if isinstance(item, epub.EpubHtml):
-            soup = BeautifulSoup(item.get_content(), 'html.parser')
-            text += soup.get_text() + "\n"
+def epub_to_txt(epub_path):
+    # open epub_file, extract all texts, return texts
+    book = open_book(epub_path)
+    lines = convert_epub_to_lines(book)
+    text = '\n'.join(lines)
+    soup = BeautifulSoup(text, 'html.parser')
+    text = soup.get_text()
 
     return text
 

@@ -1,7 +1,5 @@
 import requests as rq
 from bs4 import BeautifulSoup
-import time
-import asyncio
 
 def parse_webpage(url, progress_callback=None):
 
@@ -38,11 +36,8 @@ def parse_webpage(url, progress_callback=None):
     
     content = contentElements[0].text if contentElements else "Problem"
 
-    # Given html element <a href="javascript:fn_goto_page('next', 3112851);" style="width:100%;font-size: 30px;" class="btn btn-primary ">다음화</a>
-    # Get the next page number
     try:
         nextPageNumber = soup.find('a', class_='btn btn-primary')['href'].split("'")[2]
-        # convert ", 3112851);" into number
         nextPageNumber = int(nextPageNumber.split(',')[1].split(')')[0])
     except TypeError:
         print(result.text)
@@ -64,24 +59,26 @@ def parse_webpage(url, progress_callback=None):
 async def download_novel(fullUrl, progress_callback=None):
     pageNumber = fullUrl.split('/')[-2]
     url = fullUrl
-
+    
+    maxTry = 0
     while True:
+       
         pageNumber = parse_webpage(url, progress_callback=progress_callback)
 
         if pageNumber == 0:
             progress_callback('Done', None)
             break
+
+        if maxTry == 20:
+            progress_callback('Failed', None)
+            break
+
+        maxTry += 1
         
         # if -1 is returned, try again with same url
         if pageNumber != -1:
-            # Replace pageNumber with the new pageNumber
-            # Given url https://agit620.xyz/novel/view/222891/2
-            # Replace 222891 to value of pageNumber
+            maxTry = 0
             url = url.replace(url.split('/')[-2], str(pageNumber))
             progress_callback(None, url)
-
-            # url = "https://agit620.xyz/novel/view/" + str(pageNumber) + "/2"
    
-
-    # return completion message to async function
     return "Task completed"

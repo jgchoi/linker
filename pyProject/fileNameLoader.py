@@ -18,21 +18,17 @@ for file in files:
         epub_path = os.path.join(files_dir, file)  # replace with your epub file path
         txt_path = os.path.splitext(epub_path)[0] + '.txt'  # create txt file path
 
-        try:
-            text = epubToTxt.epub_to_txt(epub_path)
-            epubToTxt.write_to_txt(text, txt_path)
-            print(f"Converted {file} to {txt_path}")
-        except:
-            print(f"Failed to convert {file} to {txt_path}")
-            continue
+        text = epubToTxt.epub_to_txt(epub_path)
+        epubToTxt.write_to_txt(text, txt_path)
+        print(f"Converted {file} to {txt_path}")
+
     if file.endswith(".txt"):
         file = file[:-4]
-        print(file)
 
-        # if file contains any of following character, break "[]()-?"
         if "[" in file or "]" in file or "(" in file or ")" in file or "-" in file or "?" in file:
             print("File name contains invalid character")
             continue
+
 
         author, lastEpisodNumber = filechecker.get_author_and_episode(file)
         print(author, lastEpisodNumber)
@@ -42,10 +38,10 @@ for file in files:
             print("Author is None")
             continue
 
-        new_file_name = f"[{author}] {file}.txt"
+        newfileName = f"[{author}] {file} {lastEpisodNumber} 완.txt"
 
-        os.rename(os.path.join(files_dir, file + ".txt"), os.path.join(files_dir, new_file_name))
-        print(f"Renamed {file} to {new_file_name}")
+        os.rename(os.path.join(files_dir, file + ".txt"), os.path.join(files_dir, newfileName))
+        print(f"Renamed {file} to {newfileName}")
  
 
 
